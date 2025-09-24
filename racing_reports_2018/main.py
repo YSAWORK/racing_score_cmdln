@@ -1,6 +1,10 @@
 import  datetime
 from functools import lru_cache
 from dataclasses import dataclass
+import PyPDF2
+import io
+
+# This module processes racing results and provides PDF text extraction functionality
 
 # class with racing info
 @dataclass
@@ -12,6 +16,72 @@ class Drivers:
       end_time: datetime
       time: datetime.timedelta=None
       error: str=None
+
+# get text from pdf file
+def get_text_from_pdf(pdf_path) -> str:
+    """
+    Extract text content from a PDF file.
+    
+    Args:
+        pdf_path (str): Path to the PDF file
+        
+    Returns:
+        str: Extracted text content from the PDF
+        
+    Raises:
+        FileNotFoundError: If the PDF file doesn't exist
+        Exception: If there's an error reading the PDF
+    """
+    try:
+        with open(pdf_path, 'rb') as file:
+            # Create a PDF reader object
+            pdf_reader = PyPDF2.PdfReader(file)
+            
+            # Initialize text variable
+            text = ""
+            
+            # Extract text from each page
+            for page_num in range(len(pdf_reader.pages)):
+                page = pdf_reader.pages[page_num]
+                text += page.extract_text() + "\n"
+                
+            return text.strip()
+            
+    except FileNotFoundError:
+        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+    except Exception as e:
+        raise Exception(f"Error reading PDF file {pdf_path}: {str(e)}")
+
+# get text from pdf file using file-like object
+def get_text_from_pdf_file_object(pdf_file) -> str:
+    """
+    Extract text content from a PDF file-like object.
+    
+    Args:
+        pdf_file: File-like object containing PDF data
+        
+    Returns:
+        str: Extracted text content from the PDF
+        
+    Raises:
+        Exception: If there's an error reading the PDF
+    """
+    try:
+        # Create a PDF reader object from file-like object
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        
+        # Initialize text variable
+        text = ""
+        
+        # Extract text from each page
+        for page_num in range(len(pdf_reader.pages)):
+            page = pdf_reader.pages[page_num]
+            text += page.extract_text() + "\n"
+            
+        return text.strip()
+        
+    except Exception as e:
+        raise Exception(f"Error reading PDF file object: {str(e)}")
 
 # get info about time of start/finish from files
 def get_datetime_info(file) -> dict: # dict('driver abbreviation' : driver time os start/finish in datetime format, ...)
