@@ -1,3 +1,7 @@
+# ./racing_reports_2018/main.py
+# This module processes racing data and generates reports.
+
+###### IMPORT TOOLS ######
 import  datetime
 from functools import lru_cache
 from dataclasses import dataclass
@@ -5,6 +9,7 @@ from dataclasses import dataclass
 # class with racing info
 @dataclass
 class Drivers:
+      """ Class with racing info about drivers."""
       name: str
       abbr: str
       team: str
@@ -15,6 +20,7 @@ class Drivers:
 
 # get info about time of start/finish from files
 def get_datetime_info(file) -> dict: # dict('driver abbreviation' : driver time os start/finish in datetime format, ...)
+    """ Get datetime info from file and return as dictionary."""
     with open(f'{file.name}') as time_data:
         datetime_dict = {}
         for item in enumerate(time_data.read().splitlines()):
@@ -28,6 +34,7 @@ def get_datetime_info(file) -> dict: # dict('driver abbreviation' : driver time 
 
 # get info about drivers from file
 def get_drivers_info(abbr_file, start_datetime, end_datetime) -> list:
+    """ Get info about drivers from file and return as list of class(Drivers) objects."""
     with open(f'{abbr_file.name}') as driver_abbrv:
         drivers_list = list()
         for item in enumerate(driver_abbrv.read().splitlines()):
@@ -55,6 +62,7 @@ def get_drivers_info(abbr_file, start_datetime, end_datetime) -> list:
 # built report
 @lru_cache(maxsize=100)
 def built_report(abbr, start_data, end_data, range_rule) -> list: # list of class(Drivers) objects, sorted by the time of racing
+    """ Built report based on input data and return sorted list of class(Drivers) objects."""
     start_dict = get_datetime_info(start_data)
     end_dict = get_datetime_info(end_data)
     drivers_info = get_drivers_info(abbr, start_dict, end_dict)
@@ -66,6 +74,7 @@ def built_report(abbr, start_data, end_data, range_rule) -> list: # list of clas
 # print report
 @lru_cache(maxsize=100)
 def print_report(data_drivers, data_start, data_end, range_type, driver_name):
+    """ Print report based on input data. If driver_name is specified, print only info about this driver."""
     results = built_report(data_drivers, data_start, data_end, range_type)
     if driver_name:
         driver = list(filter(lambda el: el.name == driver_name, results))

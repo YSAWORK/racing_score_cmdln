@@ -1,8 +1,12 @@
+###### import tools ######
 import unittest, datetime
 from unittest.mock import patch, mock_open
 import racing_reports_2018 as code
 
+
+# test class for main.py
 class TestMain(unittest.TestCase):
+    """ Test class for main.py functions."""
     def setUp(self):
         # for test_get_datetime_info
         self.test_cases_datetime = [
@@ -41,16 +45,18 @@ class TestMain(unittest.TestCase):
              datetime.datetime.fromisoformat('2018-05-24T12:02:58.917'),
              datetime.datetime.fromisoformat('2018-05-24T12:04:03.332')))),]
 
-
+    # test get_datetime_info
     def test_get_datetime_info(self):
+        """ Test get_datetime_info function."""
         for data in self.test_cases_datetime:
             m = mock_open(read_data=data[0])
             with patch("builtins.open", m):
                 with open("test_file.txt", "r") as file:
                     assert code.get_datetime_info(file) == data[1]
 
-
+    # test get_drivers_info
     def test_get_drivers_info(self):
+        """ Test get_drivers_info function."""
         def class_for_test(case):
             object_t = code.Drivers(abbr=case[0],
                                      name=case[1],
